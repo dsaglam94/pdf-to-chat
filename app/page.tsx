@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 
 import { User, currentUser } from '@clerk/nextjs/server';
 
-import Header from '@/components/home/Header';
+import Header from '@/components/ui/Header';
 
 export default async function Home() {
   const user: User | null = await currentUser();
