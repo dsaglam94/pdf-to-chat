@@ -1,4 +1,4 @@
-import Header from '@/components/home/Header';
+import Header from '@/components/ui/Header';
 import { SignUp } from '@clerk/nextjs';
 
 export default function Page() {
@@ -13,7 +13,7 @@ export default function Page() {
                 'bg-black hover:bg-gray-700 transition text-sm normal-case',
             },
           }}
-          fallbackRedirectUrl="/dashboard"
+          forceRedirectUrl="/dashboard"
         />
       </div>
     </div>
