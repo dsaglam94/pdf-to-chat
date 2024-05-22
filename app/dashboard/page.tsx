@@ -1,5 +1,11 @@
-import Header from '@/components/ui/Header';
+import Dropzone from '@/components/ui/Dropzone';
 
 export default function page() {
-  return <Header />;
+  return (
+    <main>
+      <div>
+        <Dropzone />
+      </div>
+    </main>
+  );
 }
