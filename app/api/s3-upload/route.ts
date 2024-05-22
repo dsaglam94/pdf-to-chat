@@ -1,36 +1,50 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getAuth } from '@clerk/nextjs/server';
+
+import prisma from '@/utils/prisma';
+import loadMongoDB from '@/app/api/(utils)/mongo';
 
 const s3 = new S3Client({
-  region: process.env.NEXT_PUBLIC_AWS_REGION,
+  region: process.env.AWS_REGION,
   credentials: {
-    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
 });
 
 async function uploadToS3(file: Buffer, fileName: string) {
   const fileBuffer = file;
-  const key = `${fileName}-${Date.now()}`;
   console.log('Uploading file to S3...', fileName);
 
   const params = {
-    Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET,
-    Key: key,
+    Bucket: process.env.AWS_BUCKET,
+    Key: fileName,
     Body: fileBuffer,
   };
 
   const command = new PutObjectCommand(params);
-  const test = await s3.send(command);
+  await s3.send(command);
 
-  // then fetch the url of the uplodaded file from AWS
-  const url = `https://${process.env.NEXT_PUBLIC_AWS_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${key}`;
+  // build the URL for the uploaded object
+  const url = `https://${process.env.AWS_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
 
-  console.log('File uploaded successfully!', test, url);
+  console.log('File uploaded successfully!', url);
+  return url;
 }
 
 export async function POST(request: Request) {
   try {
+    const { userId } = getAuth(request as any);
+
+    if (!userId) {
+      return NextResponse.json({
+        error: 'You must be logged in to ingest data',
+      });
+    }
+
+    await loadMongoDB();
+
     const formData = await request.formData();
 
     const file = formData.get('file');
@@ -41,11 +55,21 @@ export async function POST(request: Request) {
 
     if (file instanceof File) {
       const buffer = Buffer.from(await file.arrayBuffer());
-      const fileName = await uploadToS3(buffer, file.name);
+      const url = await uploadToS3(buffer, file.name);
+
+      const doc = await prisma.document.create({
+        data: {
+          userId,
+          fileUrl: url,
+          fileName: file.name,
+        },
+      });
+
+      console.log('Document created:', doc);
 
       return NextResponse.json({
         message: 'File uploaded successfully!',
-        fileName,
+        url,
       });
     }
   } catch (error) {
