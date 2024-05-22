@@ -4,10 +4,23 @@ import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 export default function Dropzone() {
-  const onDrop = useCallback((acceptedFiles: any) => {
+  const onDrop = useCallback(async (acceptedFiles: any) => {
     console.log('accepted files::', acceptedFiles);
     // Do something with the files
+
+    const formData = new FormData();
+    formData.append('file', acceptedFiles[0], acceptedFiles[0].name);
+
+    const res = await fetch('/api/s3-upload', {
+      method: 'POST',
+      body: formData,
+      // body: JSON.stringify(formData),
+    });
+    const data = await res.json();
+
+    console.log(data);
   }, []);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     maxFiles: 1,
     accept: {
