@@ -3,7 +3,6 @@ import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getAuth } from '@clerk/nextjs/server';
 
 import prisma from '@/utils/prisma';
-import loadMongoDB from '@/app/api/(utils)/mongo';
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
@@ -43,10 +42,7 @@ export async function POST(request: Request) {
       });
     }
 
-    await loadMongoDB();
-
     const formData = await request.formData();
-
     const file = formData.get('file');
 
     if (!file) {
@@ -68,7 +64,9 @@ export async function POST(request: Request) {
       console.log('Document created:', doc);
 
       return NextResponse.json({
+        success: true,
         message: 'File uploaded successfully!',
+        documentId: doc.id,
         url,
       });
     }
