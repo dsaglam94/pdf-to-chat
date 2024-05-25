@@ -1,14 +1,16 @@
 'use client';
+import React, { useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useCallback } from 'react';
 
 import { useDropzone } from 'react-dropzone';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function Dropzone() {
   const [uploading, setUploading] = React.useState(false);
 
   const router = useRouter();
+  const { toast } = useToast();
 
   const onDrop = useCallback(
     async (acceptedFiles: any) => {
@@ -26,17 +28,27 @@ export default function Dropzone() {
         const data = await res.json();
 
         if (data.success) {
+          toast({
+            description: data.message,
+            variant: 'default',
+          });
+
           router.push(`/document/${data.documentId}`);
         }
       } catch (error) {
-        // TODO: handle error better
         console.error(error);
+        if (error instanceof Error) {
+          toast({
+            description: error.message,
+            variant: 'destructive',
+          });
+        }
         setUploading(false);
       } finally {
         setUploading(false);
       }
     },
-    [router]
+    [router, toast]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -49,7 +61,7 @@ export default function Dropzone() {
 
   if (uploading) {
     return (
-      <div className="max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-xl p-10 flex items-center justify-center">
+      <div className="max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-md p-10 flex items-center justify-center">
         <p>Uploading ...</p>
       </div>
     );
@@ -57,7 +69,7 @@ export default function Dropzone() {
 
   return (
     <div
-      className="max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-xl p-10 flex items-center justify-center"
+      className="max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-md p-10 flex items-center justify-center"
       {...getRootProps()}
     >
       <input {...getInputProps()} />

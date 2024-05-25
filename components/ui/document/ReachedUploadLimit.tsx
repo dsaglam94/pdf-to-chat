@@ -7,15 +7,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Document } from '@prisma/client';
 
-export default function ReachedUploadLimit({
-  docList,
-}: {
-  docList: Document[];
-}) {
+export default function ReachedUploadLimit() {
   return (
-    <div className="max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-xl p-10 flex flex-col items-center justify-center text-center mx-auto my-10 gap-5">
+    <div className="max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-md p-10 flex flex-col items-center justify-center text-center mx-auto my-10 gap-5">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>

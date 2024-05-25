@@ -43,12 +43,12 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Document deleted successfully',
+      message: 'Document deleted successfully!',
     });
   } catch (error) {
     return NextResponse.json({
       success: false,
-      message: 'Error deleting document',
+      message: 'Error deleting document.',
       error,
     });
   }
