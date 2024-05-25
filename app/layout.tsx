@@ -5,6 +5,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 
 import { Inter as FontSans } from 'next/font/google';
 
+import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 
 const fontSans = FontSans({
@@ -26,12 +27,14 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
+          suppressHydrationWarning
           className={cn(
             'min-h-screen bg-background font-sans antialiased',
             fontSans.variable
           )}
         >
           {children}
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>
