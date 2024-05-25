@@ -18,7 +18,7 @@ export default function Dropzone() {
       formData.append('file', acceptedFiles[0], acceptedFiles[0].name);
 
       try {
-        const res = await fetch('/api/s3-upload', {
+        const res = await fetch('/api/document', {
           method: 'POST',
           body: formData,
         });
@@ -49,7 +49,7 @@ export default function Dropzone() {
 
   if (uploading) {
     return (
-      <div className="max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-xl p-10 flex items-center justify-center mx-auto my-10">
+      <div className="max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-xl p-10 flex items-center justify-center">
         <p>Uploading ...</p>
       </div>
     );
@@ -57,7 +57,7 @@ export default function Dropzone() {
 
   return (
     <div
-      className="max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-xl p-10 flex items-center justify-center mx-auto my-10"
+      className="max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-xl p-10 flex items-center justify-center"
       {...getRootProps()}
     >
       <input {...getInputProps()} />
@@ -72,7 +72,9 @@ export default function Dropzone() {
           <p>Drop your PDF here ...</p>
         </div>
       ) : (
-        <p>Drag and drop some files here, or click to select files</p>
+        <p className="text-center">
+          Drag and drop some files here, or click to select files
+        </p>
       )}
     </div>
   );
