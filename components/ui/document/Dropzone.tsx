@@ -1,52 +1,78 @@
 'use client';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { useDropzone } from 'react-dropzone';
 import { useToast } from '@/components/ui/use-toast';
+import { Progress } from '@/components/ui/progress';
 
 export default function Dropzone() {
-  const [uploading, setUploading] = React.useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const router = useRouter();
   const { toast } = useToast();
 
   const onDrop = useCallback(
-    async (acceptedFiles: any) => {
+    (acceptedFiles: any) => {
       setUploading(true);
+      setProgress(0);
 
-      const formData = new FormData();
-      formData.append('file', acceptedFiles[0], acceptedFiles[0].name);
-
-      try {
-        const res = await fetch('/api/document', {
-          method: 'POST',
-          body: formData,
+      if (!acceptedFiles.length) {
+        toast({
+          description: 'Invalid file type. Please upload a PDF file',
+          variant: 'destructive',
         });
+        setUploading(false);
+        return;
+      }
 
-        const data = await res.json();
+      const file = acceptedFiles[0];
+      const formData = new FormData();
+      formData.append('file', file, file.name);
 
-        if (data.success) {
-          toast({
-            description: data.message,
-            variant: 'default',
-          });
+      const xhr = new XMLHttpRequest();
 
-          router.push(`/document/${data.documentId}`);
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percentCompleted = Math.round(
+            (event.loaded / event.total) * 100
+          );
+          setProgress(percentCompleted);
         }
-      } catch (error) {
-        console.error(error);
-        if (error instanceof Error) {
+      };
+
+      xhr.onload = () => {
+        setUploading(false);
+        if (xhr.status === 200) {
+          const data = JSON.parse(xhr.responseText);
+          if (data.success) {
+            toast({
+              description: data.message,
+              variant: 'default',
+            });
+            router.push(`/document/${data.documentId}`);
+          }
+        } else {
+          const error = JSON.parse(xhr.responseText);
           toast({
-            description: error.message,
+            description: error.message || 'Error uploading file',
             variant: 'destructive',
           });
         }
+      };
+
+      xhr.onerror = () => {
         setUploading(false);
-      } finally {
-        setUploading(false);
-      }
+        toast({
+          description: 'Error uploading file',
+          variant: 'destructive',
+        });
+      };
+
+      xhr.open('POST', '/api/document');
+      xhr.send(formData);
     },
     [router, toast]
   );
@@ -54,39 +80,50 @@ export default function Dropzone() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     maxFiles: 1,
     accept: {
-      'aplication/pdf': ['.pdf'],
+      'application/pdf': ['.pdf'],
     },
     onDrop,
   });
 
   if (uploading) {
     return (
-      <div className="max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-md p-10 flex items-center justify-center">
-        <p>Uploading ...</p>
+      <div className="bg-gray-100 max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-md p-10 flex items-center justify-center">
+        <div className="text-center w-full flex flex-col items-center gap-3">
+          <p className="text-sm text-gray-700">Uploading... {progress}%</p>
+          <Progress value={progress} className="w-[80%]" />
+        </div>
       </div>
     );
   }
 
   return (
     <div
-      className="max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-md p-10 flex items-center justify-center"
+      className="bg-gray-100 max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-md p-10 flex items-center justify-center"
       {...getRootProps()}
     >
       <input {...getInputProps()} />
       {isDragActive ? (
         <div className="flex flex-col items-center justify-center gap-5">
           <Image
-            width={70}
-            height={70}
+            width={50}
+            height={50}
             src="/upload-icon.svg"
             alt="upload icon"
           />
           <p>Drop your PDF here ...</p>
         </div>
       ) : (
-        <p className="text-center">
-          Drag and drop some files here, or click to select files
-        </p>
+        <div className="flex flex-col items-center justify-center gap-5">
+          <Image
+            width={50}
+            height={50}
+            src="/upload-icon.svg"
+            alt="upload icon"
+          />
+          <p className="text-center w-[70%]">
+            Drag and drop your PDF files here, or click to select files
+          </p>
+        </div>
       )}
     </div>
   );
