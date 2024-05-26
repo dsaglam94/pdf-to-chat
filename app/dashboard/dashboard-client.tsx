@@ -2,22 +2,33 @@
 import { Document } from '@prisma/client';
 
 import Dropzone from '@/components/ui/document/Dropzone';
-import ReachedUploadLimit from '@/components/ui/document/ReachedUploadLimit';
 import Documents from '@/components/ui/document/Documents';
 
 export default function Dashboard({ docList }: { docList: Document[] }) {
-  let dropzoneArea = null;
-
-  if (docList.length > 2) {
-    dropzoneArea = <ReachedUploadLimit />;
-  } else {
-    dropzoneArea = <Dropzone />;
-  }
-
   return (
-    <div className="container flex flex-col md:flex-row gap-5 mx-auto my-10 ">
-      <div className="flex-1">{dropzoneArea}</div>
+    <div className="max-w-2xl flex flex-col items-center justify-center gap-10 mx-auto mt-10">
+      <h1 className="text-2xl md:text-4xl font-bold text-center leading-[1.1] tracking-tighter">
+        Chat with your PDFs
+      </h1>
+
       <Documents docList={docList} />
+
+      {docList.length > 2 ? (
+        <p className="text-sm text-gray-700 text-center">
+          You have reached your upload limit. Please delete some documents to
+          upload more.
+        </p>
+      ) : (
+        <>
+          <h2 className="font-bold text-2xl leading-[1.1] tracking-tighter">
+            Or upload a new PDF
+          </h2>
+
+          <div className="max-w-md w-full">
+            <Dropzone />
+          </div>
+        </>
+      )}
     </div>
   );
 }

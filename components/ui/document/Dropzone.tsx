@@ -87,7 +87,7 @@ export default function Dropzone() {
 
   if (uploading) {
     return (
-      <div className="bg-gray-100 max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-md p-10 flex items-center justify-center">
+      <div className="w-full h-[200px] border-[2px] border-dashed border-gray-300 rounded-md p-10 flex items-center justify-center">
         <div className="text-center w-full flex flex-col items-center gap-3">
           <p className="text-sm text-gray-700">Uploading... {progress}%</p>
           <Progress value={progress} className="w-[80%]" />
@@ -98,29 +98,31 @@ export default function Dropzone() {
 
   return (
     <div
-      className="bg-gray-100 max-w-2xl h-[300px] border-[2px] border-solid border-gray-300 rounded-md p-10 flex items-center justify-center"
+      className="w-full h-[200px] border-[2px] border-dashed border-gray-300 rounded-md p-10 flex items-center justify-center"
       {...getRootProps()}
     >
       <input {...getInputProps()} />
       {isDragActive ? (
         <div className="flex flex-col items-center justify-center gap-5">
           <Image
-            width={50}
-            height={50}
+            width={40}
+            height={40}
             src="/upload-icon.svg"
             alt="upload icon"
           />
-          <p>Drop your PDF here ...</p>
+          <p className="text-xs font-medium text-center w-[70%] text-gray-600">
+            Drop your PDF here ...
+          </p>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center gap-5">
           <Image
-            width={50}
-            height={50}
+            width={40}
+            height={40}
             src="/upload-icon.svg"
             alt="upload icon"
           />
-          <p className="text-center w-[70%]">
+          <p className="text-xs font-medium text-center w-[70%] text-gray-600">
             Drag and drop your PDF files here, or click to select files
           </p>
         </div>

@@ -1,6 +1,4 @@
 'use client';
-import Link from 'next/link';
-
 import {
   SignInButton,
   SignUpButton,
@@ -10,6 +8,7 @@ import {
 } from '@clerk/nextjs';
 
 import { Button } from './button';
+import Link from 'next/link';
 
 export default function Header() {
   return (
@@ -19,9 +18,15 @@ export default function Header() {
       </Link>
 
       <div className="flex items-center gap-5">
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+        <div className="flex items-center gap-5">
+          <Link href="/dashboard">
+            <p className="text-gray-700 hover:text-gray-800">Dashboard</p>
+          </Link>
+
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+        </div>
 
         <SignedOut>
           <SignInButton>
