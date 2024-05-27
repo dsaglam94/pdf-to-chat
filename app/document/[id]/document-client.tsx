@@ -1,5 +1,6 @@
 'use client';
 import { Document } from '@prisma/client';
+import { useState } from 'react';
 
 import { Viewer, Worker } from '@react-pdf-viewer/core';
 
@@ -14,11 +15,17 @@ import type {
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
+type Message = {
+  type: 'ai' | 'user';
+  content: string;
+};
+
 export default function DocumentClient({
   currentDocument,
 }: {
   currentDocument: Document;
 }) {
+  const [messages, setMessages] = useState<Message[]>([]);
   const toolbarPluginInstance = toolbarPlugin();
   const pageNavigationPluginInstance = pageNavigationPlugin();
   const { renderDefaultToolbar, Toolbar } = toolbarPluginInstance;
@@ -31,21 +38,33 @@ export default function DocumentClient({
   });
 
   return (
-    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.js">
-      <div className={`w-full h-[90vh] flex-col text-white !important flex`}>
-        <div
-          className="align-center bg-[#eeeeee] flex p-1"
-          style={{
-            borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
-          }}
-        >
-          <Toolbar>{renderDefaultToolbar(transform)}</Toolbar>
-        </div>
-        <Viewer
-          fileUrl={currentDocument.fileUrl}
-          plugins={[toolbarPluginInstance, pageNavigationPluginInstance]}
-        />
+    <div className="container px-0 flex justify-between h-[90vh]">
+      {/* Left handside */}
+      <div className="w-full">
+        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.js">
+          <div
+            className={`w-full h-[85vh] flex-col text-white !important flex`}
+          >
+            <div
+              className="align-center bg-[#eeeeee] flex p-1"
+              style={{
+                borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              <Toolbar>{renderDefaultToolbar(transform)}</Toolbar>
+            </div>
+            <Viewer
+              fileUrl={currentDocument.fileUrl}
+              plugins={[toolbarPluginInstance, pageNavigationPluginInstance]}
+            />
+          </div>
+        </Worker>
       </div>
-    </Worker>
+
+      {/* Right handside */}
+      <div className="w-full h-[90vh] bg-red-500">
+        <div></div>
+      </div>
+    </div>
   );
 }
