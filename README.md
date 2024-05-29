@@ -14,8 +14,8 @@ Tasks that are essential to tackle to make this project.
 - [x] set upload limit (currently 3 docs)
 - [x] show upload progress on client
 - [x] show current PDF on the page
+- [x] deploy the project (Vercel)
 - [ ] create chat window UI & basic funtionality
-- [ ] deploy the project (Vercel)
 - [ ] configure langchain
 - [ ] set up MongoDB vector search
 - [ ] set up openai
