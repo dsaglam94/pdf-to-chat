@@ -11,6 +11,9 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.577.0",
     "@clerk/nextjs": "^5.0.12",
+    "@langchain/community": "^0.2.4",
+    "@langchain/core": "^0.2.2",
+    "@langchain/mongodb": "^0.0.3",
     "@prisma/client": "^5.14.0",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-progress": "^1.0.3",
@@ -23,6 +26,8 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "langchain": "^0.2.3",
+    "langsmith": "^0.1.30",
     "lucide-react": "^0.379.0",
     "mongodb": "^6.6.2",
     "next": "14.2.3",
