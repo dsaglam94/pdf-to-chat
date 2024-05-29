@@ -63,7 +63,26 @@ export default function DocumentClient({
 
       {/* Right handside */}
       <div className="w-full h-[90vh] bg-red-500">
-        <div></div>
+        <div>
+          {messages.length === 0 && (
+            <div className="text-center text-gray-500">
+              No messages yet. Start a conversation.
+            </div>
+          )}
+        </div>
+        <div>
+          {messages.map((message, index) => (
+            <div key={index} className="flex">
+              <div
+                className={`${
+                  message.type === 'ai' ? 'bg-blue-500' : 'bg-green-500'
+                } p-2 rounded-lg`}
+              >
+                {message.content}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
